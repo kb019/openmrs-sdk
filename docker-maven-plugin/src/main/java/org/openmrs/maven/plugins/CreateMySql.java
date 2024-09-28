@@ -11,12 +11,14 @@ import com.github.dockerjava.api.model.Ports;
 import com.github.dockerjava.api.model.PullResponseItem;
 import com.github.dockerjava.api.model.Volume;
 import org.apache.commons.lang.StringUtils;
+import com.github.dockerjava.api.command.ListImagesCmd;
 import org.apache.maven.plugin.MojoExecutionException;
 
 import java.io.Closeable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -53,7 +55,7 @@ public class CreateMySql extends AbstractDockerMojo {
         if (rootPassword == null) rootPassword = DEFAULT_MYSQL_PASSWORD;
 
         if (noMySqlImage(docker)) {
-            pullMySqlImage(docker);
+             pullMySqlImage(docker);
         }
 
         if (findContainer(DEFAULT_MYSQL_CONTAINER) == null) {
@@ -62,7 +64,9 @@ public class CreateMySql extends AbstractDockerMojo {
     }
 
     private boolean noMySqlImage(DockerClient docker) {
-        List<Image> mysql = docker.listImagesCmd().withImageNameFilter(MYSQL_8_4_1).exec();
+        ListImagesCmd listImagesCmd = docker.listImagesCmd();
+        listImagesCmd.getFilters().put("reference", Arrays.asList(MYSQL_8_4_1));
+        List<Image> mysql = listImagesCmd.exec();
         return mysql.size() == 0;
     }
 
@@ -80,7 +84,6 @@ public class CreateMySql extends AbstractDockerMojo {
         HostConfig hostConfig = new HostConfig()
                 .withPortBindings(portBinding)
                 .withBinds(boundVolume);
-
         docker.createContainerCmd(MYSQL_8_4_1)
                 .withHostConfig(hostConfig)
                 .withName(container)

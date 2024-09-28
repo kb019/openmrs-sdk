@@ -467,7 +467,7 @@ public class Setup extends AbstractServerTask {
 
 	private void setupDatabase(Server server, DistroProperties distroProperties) throws MojoExecutionException {
 		if (server.getDbDriver() == null) {
-			boolean isH2Supported = true;
+            boolean isH2Supported = true;
 			if (distroProperties != null) {
 				isH2Supported = distroProperties.isH2Supported();
 			}
@@ -484,7 +484,6 @@ public class Setup extends AbstractServerTask {
 		if (server.getDbName() == null) {
 			server.setDbName(determineDbName(server.getDbUri(), server.getServerId()));
 		}
-
 		if (server.isMySqlDb() || server.isPostgreSqlDb()) {
 			String uri = getUriWithoutDb(server);
 			try (DBConnector connector = new DBConnector(uri, server.getDbUser(), server.getDbPassword(), server.getDbName())) {
@@ -621,14 +620,12 @@ public class Setup extends AbstractServerTask {
 				}
 
 				dbName = parsedUri.getPath();
-
 				if (dbName == null || dbName.isEmpty() || dbName.equals("/")) {
 					throw new MojoExecutionException("No database name is given in the URI: " + dbName);
 				}
 
 				dbName = dbName.substring(1);
-
-				if (!dbName.substring(1).matches("^[A-Za-z0-9_\\-]+$")) {
+				if (!dbName.matches("^[A-Za-z0-9_\\-]+$")) {
 					throw new MojoExecutionException(
 							"The database name is not in the correct format (it should only have alphanumeric, dash and underscore signs): "
 									+
@@ -639,7 +636,7 @@ public class Setup extends AbstractServerTask {
 				throw new MojoExecutionException("Could not parse uri: " + uri, e);
 			}
 		}
-
+       
 		return dbName;
 	}
 
